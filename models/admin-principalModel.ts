@@ -1,5 +1,6 @@
 // models/user.js
 
+const e = require("express");
 const { db } = require("../config/db");
 
 // Exemple de modèle pour récupérer tous les utilisateurs

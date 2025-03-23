@@ -6,3 +6,5 @@ const employesRoutes = express.Router();
 employesRoutes.get('/', getAllEmployes);
 
 module.exports = employesRoutes;
+
+
