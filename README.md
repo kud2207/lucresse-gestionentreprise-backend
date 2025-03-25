@@ -23,3 +23,19 @@ creation d'un server pour la gestion d'une entreprise avec ExpresJs qui vas inte
   > `npm install pg` : suite a des petit probleme de conxion avec mysql j'ai pasculé sur postgresql , <sudo systemctl start postgresql> pour activer sur ubuntu
 
 # (22/03/2025) : migration de expres en typescript
+
+
+# Statut 
+  > `200 OK` : Indique que la requête a réussi (ex : récupération des admins).
+  > `201 Created` :  créé avec succès.
+  > `400 Bad Request` : Indique une requête invalide (ex : ID manquant ou invalide).
+  > `403 Forbidden` : pas les permissions
+  > `404 Not Found` :
+  > `409 Conflict` :  Conflit de données (déjà existant).
+  > `422 Unprocessable Entity` : Champs vides ou invalides.
+  > `500 Internal Server Error` : Erreur serveur (ex : problème de base de données).
+  > `503 Service Unavailable` : Service non disponible.
+  > `` :
+  > `` :
+  > `` :
+  > `` :

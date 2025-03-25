@@ -33,6 +33,9 @@ CREATE TABLE admin_secondaire (
     num_tel VARCHAR(15) NOT NULL,
     fonction VARCHAR(50),
     nom_salle VARCHAR(100) REFERENCES salle(nom) ON DELETE SET NULL,
+    update_employe BOOLEAN DEFAULT FALSE,
+    update_equipement BOOLEAN DEFAULT FALSE,
+    update_salle BOOLEAN DEFAULT FALSE,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
