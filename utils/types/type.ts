@@ -1,4 +1,5 @@
 import {Response } from "express";
+
 export interface AdminPrincipal {
     id_admin_principal: number;
     nom: string;
@@ -6,7 +7,7 @@ export interface AdminPrincipal {
     adresse :string;
     num_tel: string;
     fonction :string;
-}
+};
 
 export interface ApiResponce <T = null>{
     res: Response;
@@ -14,4 +15,9 @@ export interface ApiResponce <T = null>{
     statut: number;
     message: string;
     data?: T;
-}
+};
+
+export interface Salle {
+    nom: string;
+    nb_place: number;
+};

@@ -13,3 +13,4 @@ adminPrincipalRouter.delete('/delete/:id', deleteOneAdminPrincipal);
 export { 
     adminPrincipalRouter,
  };
+ 

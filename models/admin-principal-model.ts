@@ -24,7 +24,7 @@ const getAllAdminPrincipal = async (req: Request, res: Response) => {
                 res,
                 success: false,
                 statut: 500,
-                message: MESSAGE_CODE.LISTE_ADMIN_PRINCIPAL_ERROR,
+                message: MESSAGE_CODE.ADMIN_ERROR,
             });
     }
 }
@@ -57,7 +57,7 @@ const getOneAdminPrincipal = async (req: Request, res: Response) => {
         } else {
             sendResponse(
                 {
-                    res,
+                    res, 
                     success: true,
                     statut: 200,
                     message: MESSAGE_CODE.SUCCESS,
@@ -66,13 +66,13 @@ const getOneAdminPrincipal = async (req: Request, res: Response) => {
         }
 
     } catch (error) {
-        console.warn('Error getOneAdminPrincipal:', (error as Error).message);
+        console.warn('Error getOneAdminPrincipal ', (error as Error).message);
         sendResponse(
             {
                 res,
                 success: false,
                 statut: 500,
-                message: MESSAGE_CODE.ADMIN_PRINCIPAL_NOT_FOUND,
+                message: MESSAGE_CODE.ADMIN_ERROR,
             });
     }
 }
@@ -104,13 +104,16 @@ const updateOneAdminPrincipal = async (req: Request, res: Response) => {
     }
 
     try {
-        const sql = `
+        const sql : string = `
             UPDATE admin_principal 
             SET pwd = $1, nom = $2, prenom = $3, adresse = $4, 
                 num_tel = $5, fonction = $6, nom_salle = $7 
             WHERE id_admin_principal = $8
             RETURNING *`; // Pour retourner les données mises à jour
+            
+        const isSQLnameSalles : string = `SELECT * FROM salle WHERE nom = $1`;
 
+        const resultIsSQLnameSalles = await db.query(isSQLnameSalles, [nom_salle]);
         const updateResult = await db.query(sql, [pwd, nom, prenom, adresse, num_tel, fonction, nom_salle, id]);
 
         if (updateResult.rowCount === 0) {
@@ -119,6 +122,15 @@ const updateOneAdminPrincipal = async (req: Request, res: Response) => {
                 success: false,
                 statut: 404,
                 message: MESSAGE_CODE.ADMIN_PRINCIPAL_NOT_FOUND,
+            });
+            return;
+        }
+        if (resultIsSQLnameSalles.rowCount === 0) {
+            sendResponse({
+                res,
+                success: false,
+                statut: 400,
+                message: MESSAGE_CODE.SALLE_NOT_EXIST,
             });
             return;
         }
