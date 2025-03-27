@@ -18,4 +18,5 @@ export enum MESSAGE_CODE {
     SALLE_NOT_FOUND = "Salle non trouvée",
     SALLE_NOT_EXIST = "La salle n'existe pas",
     SALLE_EXIST = "La salle existe déjà",
+    SALLE_UPDATE_ERROR = "Erreur lors de la mise à jour de la salle",
 }

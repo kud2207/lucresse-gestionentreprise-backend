@@ -119,93 +119,65 @@ const updateOneSalle = async (req: Request, res: Response) => {
     const { nomSalle } = req.params;
     const { nom, nb_place } = req.body;
 
-    if (!nomSalle) {
-        sendResponse({
-            res,
-            success: false,
-            statut: 400,
-            message: MESSAGE_CODE.INVALID_ID,
-        });
-        return;
-    }
-    if (!nom || !nb_place) {
-        sendResponse({
-            res,
-            success: false,
-            statut: 422,
-            message: MESSAGE_CODE.CHAMP_EMPTY,
-        });
-        return;
-    }
-
     try {
-        // Update related tables first to avoid foreign key constraint violations
-        const sqlEquipementSalle: string = `UPDATE equipement SET nom_salle = $1 WHERE nom_salle = $2`;
-        await db.query(sqlEquipementSalle, [nom, nomSalle]);
+        if (!nomSalle) {
+            sendResponse({
+                res,
+                success: false,
+                statut: 400,
+                message: MESSAGE_CODE.INVALID_ID,
+            });
+            return;
+        }
+        if (!nom || !nb_place) {
+            sendResponse({
+                res,
+                success: false,
+                statut: 422,
+                message: MESSAGE_CODE.CHAMP_EMPTY,
+            });
+            return;
+        }
 
-        const sqlAdminPrinSalle: string = `UPDATE admin_principal SET nom_salle = $1 WHERE nom_salle = $2`;
-        await db.query(sqlAdminPrinSalle, [nom, nomSalle]);
+        // Commencer une transaction
+        await db.query('BEGIN');
 
-        const sqlAdminSecSalle: string = `UPDATE admin_secondaire SET nom_salle = $1 WHERE nom_salle = $2`;
-        await db.query(sqlAdminSecSalle, [nom, nomSalle]);
+        // Mettre à jour la table salle (pour changer le nom)
+        const sqlUpdateSalle = `UPDATE salle SET nom = $1, nb_place = $2 WHERE nom = $3 RETURNING *`;
+        const resultat = await db.query<Salle>(sqlUpdateSalle, [nom, nb_place, nomSalle]);
 
-        // Update the salle table after related tables are updated
-        const sql: string = `UPDATE salle SET nom = $1, nb_place = $2 WHERE nom = $3 RETURNING *`;
-        const resultat = await db.query<Salle>(sql, [nom, nb_place, nomSalle]);
         if (resultat.rows.length === 0) {
             sendResponse({
                 res,
                 success: false,
-                statut: 404,
-                message: MESSAGE_CODE.SALLE_NOT_EXIST,
+                statut: 400,
+                message: MESSAGE_CODE.SALLE_UPDATE_ERROR,
             });
-        } else {
-            try {
-                // modification des tables qui ont une relation avec la table salle
-                const sqlAdminPrinSalle: string = `UPDATE admin_principal SET nom_salle = $1 WHERE nom_salle = $2`;
-                const adminPrinResult = await db.query(sqlAdminPrinSalle, [nom, nomSalle]);
-
-                const sqlAdminSecSalle: string = `UPDATE admin_secondaire SET nom_salle = $1 WHERE nom_salle = $2`;
-                const adminSecResult = await db.query(sqlAdminSecSalle, [nom, nomSalle]);
-
-                const sqlEquipementSalle: string = `UPDATE equipement SET nom_salle = $1 WHERE nom_salle = $2`;
-                const equipementResult = await db.query(sqlEquipementSalle, [nom, nomSalle]);
-
-                // Vérification que toutes les modifications ont été effectuées
-                if (
-                    adminPrinResult.rowCount !== null && adminPrinResult.rowCount > 0 &&
-                    adminSecResult.rowCount !== null && adminSecResult.rowCount > 0 &&
-                    equipementResult.rowCount !== null && equipementResult.rowCount > 0
-                ) {
-                    sendResponse({
-                        res,
-                        success: true,
-                        statut: 200,
-                        message: MESSAGE_CODE.UPDATE_SUCCESS,
-                        data: resultat.rows[0],
-                    });
-                } else {
-                    console.warn(" Error updateOneSalle: la modification des tables liées a échoué");
-                    sendResponse({
-                        res,
-                        success: false,
-                        statut: 500,
-                        message: MESSAGE_CODE.UPDATE_ERROR,
-                    });
-                }
-            } catch (error) {
-                console.warn('Error during related table updates:', (error as Error).message);
-                sendResponse({
-                    res,
-                    success: false,
-                    statut: 500,
-                    message: MESSAGE_CODE.UPDATE_ERROR,
-                });
-            }
+            return;
         }
 
+        const sqlEquipementSalle = `UPDATE equipement SET nom_salle = $1 WHERE nom_salle = $2`;
+        const sqlAdminPrinSalle = `UPDATE admin_principal SET nom_salle = $1 WHERE nom_salle = $2`;
+        const sqlAdminSecSalle = `UPDATE admin_secondaire SET nom_salle = $1 WHERE nom_salle = $2`;
+
+        await db.query(sqlEquipementSalle, [nom, nomSalle]);
+        await db.query(sqlAdminPrinSalle, [nom, nomSalle]);
+        await db.query(sqlAdminSecSalle, [nom, nomSalle]);
+
+        // Valider la transaction
+        await db.query('COMMIT');
+
+        sendResponse({
+            res,
+            success: true,
+            statut: 200,
+            message: MESSAGE_CODE.UPDATE_SUCCESS,
+            data: resultat.rows[0],
+        });
 
     } catch (error) {
+        // Annuler les changements en cas d'erreur
+        await db.query('ROLLBACK');
         console.warn('Error updateOneSalle', (error as Error).message);
         sendResponse({
             res,
@@ -214,12 +186,56 @@ const updateOneSalle = async (req: Request, res: Response) => {
             message: MESSAGE_CODE.UPDATE_ERROR,
         });
     }
+};
+
+//suprimer un salle
+const deleteOneSalle = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+        sendResponse({
+            res,
+            success: false,
+            statut: 400,
+            message: MESSAGE_CODE.INVALID_ID,
+        });
+        return;
+    }
+    try {
+
+        const sql: string = `DELETE FROM salle WHERE id_salle = $1`
+        const resultat = await db.query<Salle>(sql, [id]);
+        if (resultat.rowCount === 0) {
+            sendResponse({
+                res,
+                success: false,
+                statut: 404,
+                message: MESSAGE_CODE.SALLE_NOT_FOUND,
+            });
+        }
+
+        sendResponse({
+            res,
+            success: true,
+            statut: 200,
+            message: MESSAGE_CODE.DELETE_SUCCESS,
+        });
+
+    } catch (error) {
+        console.warn('Error deleteOneSalle:', (error as Error).message);
+        sendResponse({
+            res,
+            success: false,
+            statut: 500,
+            message: MESSAGE_CODE.DELETE_ERROR,
+        });
+    }
 }
+
 
 export {
     getAllSalle,
     getOneSalle,
     createSalle,
-    updateOneSalle
-
+    updateOneSalle,
+    deleteOneSalle
 };

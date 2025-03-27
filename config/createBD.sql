@@ -19,7 +19,7 @@ CREATE TABLE admin_principal (
     adresse VARCHAR(255),
     num_tel VARCHAR(15) NOT NULL,
     fonction VARCHAR(50),
-    nom_salle VARCHAR(100) REFERENCES salle(nom) ON DELETE SET NULL,
+    nom_salle VARCHAR(100) REFERENCES salle(nom) ON DELETE SET NULL ON UPDATE CASCADE,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -32,14 +32,14 @@ CREATE TABLE admin_secondaire (
     adresse VARCHAR(255),
     num_tel VARCHAR(15) NOT NULL,
     fonction VARCHAR(50),
-    nom_salle VARCHAR(100) REFERENCES salle(nom) ON DELETE SET NULL,
+    nom_salle VARCHAR(100) REFERENCES salle(nom) ON DELETE SET NULL ON UPDATE CASCADE,
     update_employe BOOLEAN DEFAULT FALSE,
     update_equipement BOOLEAN DEFAULT FALSE,
     update_salle BOOLEAN DEFAULT FALSE,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table employe
+-- Table employe 
 CREATE TABLE employe (
     id_utilisateur SERIAL PRIMARY KEY,
     pwd VARCHAR(20) NULL,
@@ -48,9 +48,9 @@ CREATE TABLE employe (
     adresse VARCHAR(255),
     num_tel VARCHAR(15) NOT NULL,
     fonction VARCHAR(50),
-    nom_salle VARCHAR(100) REFERENCES salle(nom) ON DELETE SET NULL,
-    id_admin_principal INT REFERENCES admin_principal(id_admin_principal) ON DELETE SET NULL,
-    id_admin_secondaire INT REFERENCES admin_secondaire(id_admin_secondaire) ON DELETE SET NULL,
+    nom_salle VARCHAR(100) REFERENCES salle(nom) ON DELETE SET NULL ON UPDATE CASCADE,
+    id_admin_principal INT REFERENCES admin_principal(id_admin_principal) ON DELETE SET NULL ON UPDATE CASCADE,
+    id_admin_secondaire INT REFERENCES admin_secondaire(id_admin_secondaire) ON DELETE SET NULL ON UPDATE CASCADE,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -61,9 +61,9 @@ CREATE TABLE equipement (
     num_serie VARCHAR(50) UNIQUE NOT NULL,
     statut BOOLEAN DEFAULT TRUE,
     type VARCHAR(50),
-    nom_salle VARCHAR(100) REFERENCES salle(nom) ON DELETE SET NULL,
-    id_admin_principal INT REFERENCES admin_principal(id_admin_principal) ON DELETE SET NULL,
-    id_admin_secondaire INT REFERENCES admin_secondaire(id_admin_secondaire) ON DELETE SET NULL,
+    nom_salle VARCHAR(100) REFERENCES salle(nom) ON DELETE SET NULL ON UPDATE CASCADE,
+    id_admin_principal INT REFERENCES admin_principal(id_admin_principal) ON DELETE SET NULL ON UPDATE CASCADE,
+    id_admin_secondaire INT REFERENCES admin_secondaire(id_admin_secondaire) ON DELETE SET NULL ON UPDATE CASCADE,
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -78,7 +78,9 @@ VALUES
 -- Insertion des administrateurs principaux
 INSERT INTO admin_principal (pwd, nom, prenom, adresse, num_tel, fonction, nom_salle)
 VALUES 
-('1234', 'KAGEU', 'Ulrich', '123 rue des Lilas', '+33678901234', 'Directeur Général', 'Salle de réunion A');
+('1234', 'KAGEU', 'Ulrich', '123 rue des Lilas', '+33678901234', 'Directeur Général', 'Salle de conférence'),
+('1234', 'DUPONT', 'Paul', '456 avenue des Roses', '+33789012345', 'Directeur Technique', 'Salle de réunion A'),
+('1234', 'MARTIN', 'Sophie', '789 boulevard des Champs', '+33890123456', 'Directeur Administratif', 'Salle de formation');
 
 -- Insertion des administrateurs secondaires
 INSERT INTO admin_secondaire (pwd, nom, prenom, adresse, num_tel, fonction, nom_salle)

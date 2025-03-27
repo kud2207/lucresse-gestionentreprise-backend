@@ -183,7 +183,7 @@ const deleteOneAdminPrincipal = async(req : Request, res : Response)=>{
         sendResponse({
             res,
             success: true,
-            statut: 200,
+            statut: 204,
             message: MESSAGE_CODE.DELETE_SUCCESS,
         });
         return;
@@ -200,6 +200,7 @@ const deleteOneAdminPrincipal = async(req : Request, res : Response)=>{
     }
 
 }
+
 
 
 export {
