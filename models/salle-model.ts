@@ -216,7 +216,7 @@ const deleteOneSalle = async (req: Request, res: Response) => {
         sendResponse({
             res,
             success: true,
-            statut: 200,
+            statut: 200, //meiux serais 204
             message: MESSAGE_CODE.DELETE_SUCCESS,
         });
 

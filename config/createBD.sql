@@ -41,7 +41,7 @@ CREATE TABLE admin_secondaire (
 
 -- Table employe 
 CREATE TABLE employe (
-    id_utilisateur SERIAL PRIMARY KEY,
+    id_employe SERIAL PRIMARY KEY,
     pwd VARCHAR(20) NULL,
     nom VARCHAR(100) NOT NULL,
     prenom VARCHAR(100) NOT NULL,
@@ -92,12 +92,12 @@ VALUES
 -- Insertion des employés
 INSERT INTO employe (pwd, nom, prenom, adresse, num_tel, fonction, nom_salle, id_admin_principal, id_admin_secondaire)
 VALUES 
-('1234', 'Dupont', 'Jean', '5 rue de Paris', '+33123456789', 'Technicien', 'Salle de réunion A', 1, NULL),
-('1234', 'Bernard', 'Marie', '10 avenue des Champs', '+33234567891', 'Ingénieur', 'Salle de réunion B', 1, NULL),
-('1234', 'Petit', 'Luc', '15 rue de Lyon', '+33345678912', 'Développeur', 'Salle de conférence', NULL, 3),
-('1234', 'Robert', 'Julie', '20 boulevard des Alpes', '+33456789123', 'Chef de projet', 'Salle de formation', NULL, 3),
-('1234', 'Richard', 'Thomas', '25 rue de Marseille', '+33567891234', 'Analyste', 'Salle de réunion A', NULL, 2),
-('1234', 'Durand', 'Claire', '30 avenue des Platanes', '+33678912345', 'Designer', 'Salle de réunion B', 1, NULL);
+('1234', 'Dupont', 'Jean', '5 rue de Paris', '+33123456789', 'Technicien', 'Salle de formation', 9, NULL),
+('1234', 'Bernard', 'Marie', '10 avenue des Champs', '+33234567891', 'Ingénieur', 'Salle de formation', 9, NULL),
+('1234', 'Petit', 'Luc', '15 rue de Lyon', '+33345678912', 'Développeur', 'Salle de formation', NULL, 1),
+('1234', 'Robert', 'Julie', '20 boulevard des Alpes', '+33456789123', 'Chef de projet', 'Salle de formation', NULL, 1),
+('1234', 'Richard', 'Thomas', '25 rue de Marseille', '+33567891234', 'Analyste', 'Salle de formation', NULL, 2),
+('1234', 'Durand', 'Claire', '30 avenue des Platanes', '+33678912345', 'Designer', 'Salle de formation', 9, NULL);
 
 
 -- Insertion des équipements

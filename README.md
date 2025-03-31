@@ -58,3 +58,7 @@ creation d'un server pour la gestion d'une entreprise avec ExpresJs qui vas inte
 
       # nous avon egalement ON DELETE CASCADE 
       signifie que, si un client est supprimé de la table Customers (Clients), toutes les lignes de la table Orders (Commandes) contenant la même valeur d'ID client sont également supprimées.
+
+
+
+# sudo ntfsfix /dev/sdb1
